@@ -40,7 +40,7 @@ jobs:
       - name: Verify tag matches package version
         run: |
           TAG="${GITHUB_REF_NAME#v}"
-          PKG=$(ls dist/*.whl | sed -E 's/.*menxia-([0-9.]+)-py3.*/\1/')
+          PKG=$(ls dist/*.whl | sed -E 's/.*-([0-9.]+)-py3.*/\1/')   # 不写死包名：改名时不会漏改
           echo "tag=$TAG package=$PKG"
           [ "$TAG" = "$PKG" ] || { echo "::error::tag $TAG ≠ package version $PKG"; exit 1; }
       - uses: pypa/gh-action-pypi-publish@release/v1
