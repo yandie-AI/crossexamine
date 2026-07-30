@@ -184,9 +184,26 @@ Measured, not estimated, on a ~110 KB transcript slice:
 | **routine change, one seat** | **~3–4 min** | |
 | major change, three seats | ~4–5 min | seats run in parallel |
 
-Whether that is worth it depends entirely on what a bad commit costs you. For a hobby project,
-probably not. For an agent committing to something that matters, one review is cheaper than one
-incident.
+Three to four minutes, against what a bad commit costs you. That ratio is the whole argument, and
+it gets more favourable the more your agent is trusted — which is the opposite of how most
+AI-tooling economics work.
+
+## Who this is for
+
+The value of this tool scales with **how much you have let the agent touch**, not with how much
+you spend on tokens.
+
+- One person, one side project, reading every diff by hand: you probably do not need this.
+- A team where agents open pull requests faster than humans can read them: the reviewing capacity
+  is already the bottleneck, and the thing filling the gap is the agent's own summary.
+- An organisation where an agent has commit access to a codebase that carries real money,
+  real customers, or a regulator: the question is not *whether* the agent's self-report is
+  reliable, it is *what you have that is independent of it*. Right now, for most teams, the
+  honest answer is: the diff, and nothing else.
+
+That last case is the one this was built for. Not because large teams have worse agents —
+because a mistake there costs orders of magnitude more, and the record of what the agent actually
+did is sitting on disk, unread, in every one of those organisations today.
 
 ## Requirements
 
