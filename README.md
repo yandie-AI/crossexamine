@@ -83,11 +83,10 @@ line number to prove it.
 ## Install
 
 ```bash
-git clone https://github.com/yandie-AI/crossexamine && cd crossexamine && pip install -e .
+pip install crossexamine
 ```
 
-> Not on PyPI yet — `pip install crossexamine` will work once the first tag is cut.
-> Zero dependencies, so installing from source is a clone and a `pip install -e .`.
+Zero dependencies. Two commands are installed: `crossexamine` and the short alias `cx`.
 
 ## Setup (about a minute)
 
