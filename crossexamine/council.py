@@ -101,8 +101,8 @@ class Seat:
 
     @classmethod
     def from_env(cls, prefix: str) -> "Seat":
-        """Build from `MENXIA_<PREFIX>_{BASE_URL,API_KEY,MODEL,TEMPERATURE}`."""
-        g = lambda k, d="": os.environ.get(f"MENXIA_{prefix}_{k}", d)  # noqa: E731
+        """Build from `CX_<PREFIX>_{BASE_URL,API_KEY,MODEL,TEMPERATURE}`."""
+        g = lambda k, d="": os.environ.get(f"CX_{prefix}_{k}", d)  # noqa: E731
         temp = g("TEMPERATURE", "1.0")
         return cls(name=prefix.lower(), base_url=g("BASE_URL").rstrip("/"),
                    api_key=g("API_KEY"), model=g("MODEL"),
@@ -135,7 +135,7 @@ def assign_seats(change_id: str, seats: list[Seat], major: bool) -> list[tuple[s
     There is no exempt tier: small edits are where the expensive mistakes live.
     """
     if not seats:
-        raise ValueError("no seats configured (see README: MENXIA_SEATS)")
+        raise ValueError("no seats configured (see README: CX_SEATS)")
     off = int(change_id[:8], 16) % len(seats)
     if major:
         return [(pos, seats[(off + i) % len(seats)]) for i, pos in enumerate(TRIO)]

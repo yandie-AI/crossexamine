@@ -1,4 +1,4 @@
-"""`menxia` command line."""
+"""`crossexamine` command line."""
 from __future__ import annotations
 
 import argparse
@@ -7,18 +7,18 @@ import os
 import sys
 from pathlib import Path
 
-from menxia import council, gate, prompts, slicer
+from crossexamine import council, gate, prompts, slicer
 
-WORKDIR = Path(os.environ.get("MENXIA_HOME", Path.home() / ".menxia"))
+WORKDIR = Path(os.environ.get("CX_HOME", Path.home() / ".crossexamine"))
 
 
 def load_seats() -> list[council.Seat]:
-    """Seats come from env: `MENXIA_SEATS=minimax,deepseek,moonshot` plus per-seat vars.
+    """Seats come from env: `CX_SEATS=minimax,deepseek,moonshot` plus per-seat vars.
 
     Deliberately not a config file: the API keys have to come from the environment anyway,
     and one source beats two that can disagree.
     """
-    names = [s.strip().upper() for s in os.environ.get("MENXIA_SEATS", "").split(",") if s.strip()]
+    names = [s.strip().upper() for s in os.environ.get("CX_SEATS", "").split(",") if s.strip()]
     seats = [council.Seat.from_env(n) for n in names]
     return [s for s in seats if s.base_url and s.api_key and s.model]
 
@@ -27,7 +27,7 @@ def do_review(args: argparse.Namespace) -> int:
     repo = Path(args.repo).resolve()
     paths = gate.staged_files(repo) or ([args.file] if args.file else [])
     if not paths:
-        print("menxia: nothing staged to review")
+        print("crossexamine: nothing staged to review")
         return 0
     major, hits = gate.is_major(paths)
     if args.major:
@@ -35,7 +35,7 @@ def do_review(args: argparse.Namespace) -> int:
     sig = gate.change_signature(repo, paths)
     seats = load_seats()
     if not seats:
-        print("menxia: no seats configured. See README (MENXIA_SEATS).", file=sys.stderr)
+        print("crossexamine: no seats configured. See README (CX_SEATS).", file=sys.stderr)
         return 2
 
     work = WORKDIR / sig
@@ -47,7 +47,7 @@ def do_review(args: argparse.Namespace) -> int:
         "(the agent filed no account of this change)"
 
     assigned = council.assign_seats(sig, seats, major)
-    print(f"menxia: {'MAJOR' if major else 'routine'} change {sig} "
+    print(f"crossexamine: {'MAJOR' if major else 'routine'} change {sig} "
           f"-- {len(assigned)} seat(s){' -- ' + ', '.join(hits[:3]) if hits else ''}")
 
     verdicts = []
@@ -76,9 +76,9 @@ def do_review(args: argparse.Namespace) -> int:
                 encoding="utf-8")
             text, v.elapsed_verify, err = council.verify(
                 tb, work / f"agent_{position}.json", agent_cmd=args.agent,
-                model=os.environ.get("MENXIA_VERIFY_MODEL", seat.model),
-                base_url=os.environ.get("MENXIA_VERIFY_BASE_URL", seat.base_url),
-                api_key=os.environ.get("MENXIA_VERIFY_API_KEY", seat.api_key),
+                model=os.environ.get("CX_VERIFY_MODEL", seat.model),
+                base_url=os.environ.get("CX_VERIFY_BASE_URL", seat.base_url),
+                api_key=os.environ.get("CX_VERIFY_API_KEY", seat.api_key),
                 timeout=args.timeout)
             if text:
                 (work / f"verified_{position}.md").write_text(text, encoding="utf-8")
@@ -132,16 +132,16 @@ def do_precommit(args: argparse.Namespace) -> int:
 
     if (why := gate.emergency_reason()):
         ledger.append({"event": "bypass", "signature": sig, "reason": why})
-        print(f"menxia: emergency bypass recorded in the ledger -- {why}")
+        print(f"crossexamine: emergency bypass recorded in the ledger -- {why}")
         return 0
     if unanswered := ledger.unanswered_vetoes():
-        print(f"menxia: {len(unanswered)} unanswered VETO(s). A veto is a remand, not a suggestion.")
-        print("  answer with: menxia answer <signature> --why '...'")
+        print(f"crossexamine: {len(unanswered)} unanswered VETO(s). A veto is a remand, not a suggestion.")
+        print("  answer with: crossexamine answer <signature> --why '...'")
         return 1
     if any(e.get("signature") == sig and e.get("event") == "signed" for e in ledger.entries()):
         return 0
-    print(f"menxia: change {sig} has not been reviewed. Run `menxia review`, "
-          f"or set MENXIA_EMERGENCY='reason' (recorded in the ledger).")
+    print(f"crossexamine: change {sig} has not been reviewed. Run `crossexamine review`, "
+          f"or set CX_EMERGENCY='reason' (recorded in the ledger).")
     return 1
 
 
@@ -150,7 +150,7 @@ def do_answer(args: argparse.Namespace) -> int:
     ledger.append({"event": "answered", "signature": args.signature,
                    "decision": args.decision, "why": args.why})
     ledger.append({"event": "signed", "signature": args.signature})
-    print(f"menxia: {args.signature} answered ({args.decision}) and recorded.")
+    print(f"crossexamine: {args.signature} answered ({args.decision}) and recorded.")
     return 0
 
 
@@ -167,7 +167,7 @@ def do_status(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(prog="menxia", description=(
+    ap = argparse.ArgumentParser(prog="crossexamine", description=(
         "Adversarial review for AI coding agents: other models read your agent's actual "
         "transcript -- not its self-report -- and can veto the commit."))
     ap.add_argument("--repo", default=".")
@@ -203,7 +203,7 @@ def main(argv: list[str] | None = None) -> int:
 
     args = ap.parse_args(argv)
     if getattr(args, "decision", None) == "override" and not getattr(args, "why", ""):
-        print("menxia: overriding the reviewers requires --why. The reason goes on the record; "
+        print("crossexamine: overriding the reviewers requires --why. The reason goes on the record; "
               "that record is what makes 'the author keeps final say' survivable.", file=sys.stderr)
         return 2
     return args.fn(args)

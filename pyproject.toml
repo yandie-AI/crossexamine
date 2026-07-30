@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "menxia"
+name = "crossexamine"
 version = "0.1.0"
-description = "Adversarial review for AI coding agents: other models read your agent's actual transcript -- not its self-report -- and can veto the commit."
+description = "Cross-examine your AI coding agent: models from other vendors read its raw session transcript -- not its self-report -- and can veto the commit."
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.10"
@@ -22,11 +22,12 @@ classifiers = [
 dependencies = []
 
 [project.scripts]
-menxia = "menxia.cli:main"
+crossexamine = "crossexamine.cli:main"
+cx = "crossexamine.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/yandie-AI/menxia"
-Issues = "https://github.com/yandie-AI/menxia/issues"
+Homepage = "https://github.com/yandie-AI/crossexamine"
+Issues = "https://github.com/yandie-AI/crossexamine/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["menxia"]
+packages = ["crossexamine"]

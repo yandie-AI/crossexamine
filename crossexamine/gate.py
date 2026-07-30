@@ -12,7 +12,7 @@ the same vendor (fake independence); a stray `git add -A` swept 190 unrelated fi
 Neither would have been reviewed under an exempt tier.
 
 So: **there is no exempt tier.** Routine change, one seat. Major change, three seats.
-The escape hatch (`MENXIA_EMERGENCY`) exists, but it writes itself to the ledger -- bypassing is
+The escape hatch (`CX_EMERGENCY`) exists, but it writes itself to the ledger -- bypassing is
 allowed, bypassing *quietly* is not.
 """
 from __future__ import annotations
@@ -26,7 +26,7 @@ import time
 from pathlib import Path
 
 #: Paths whose change alters *the basis on which future decisions are made*.
-#: Override with a `menxia.toml`/env in your own repo; these are sensible defaults.
+#: Override with a `crossexamine.toml`/env in your own repo; these are sensible defaults.
 MAJOR_PATTERNS: tuple[str, ...] = (
     r"^(CLAUDE|AGENTS|README)\.md$",
     r"^docs/(design|architecture|adr)/",
@@ -105,8 +105,8 @@ class Ledger:
 
 
 HOOK_TEMPLATE = """#!/usr/bin/env bash
-# installed by `menxia install-hook`
-exec {python} -m menxia.cli precommit
+# installed by `crossexamine install-hook`
+exec {python} -m crossexamine.cli precommit
 """
 
 
@@ -114,10 +114,10 @@ def install_hook(repo: Path, python: str = "python3") -> Path:
     hook = repo / ".git" / "hooks" / "pre-commit"
     hook.parent.mkdir(parents=True, exist_ok=True)
     existing = hook.read_text(encoding="utf-8") if hook.exists() else ""
-    if "menxia.cli precommit" in existing:
+    if "crossexamine.cli precommit" in existing:
         return hook
     if existing.strip():                       # keep whatever is already there
-        hook.write_text(existing.rstrip("\n") + f"\n\n{python} -m menxia.cli precommit\n",
+        hook.write_text(existing.rstrip("\n") + f"\n\n{python} -m crossexamine.cli precommit\n",
                         encoding="utf-8")
     else:
         hook.write_text(HOOK_TEMPLATE.format(python=python), encoding="utf-8")
@@ -126,4 +126,4 @@ def install_hook(repo: Path, python: str = "python3") -> Path:
 
 
 def emergency_reason() -> str:
-    return os.environ.get("MENXIA_EMERGENCY", "").strip()
+    return os.environ.get("CX_EMERGENCY", "").strip()

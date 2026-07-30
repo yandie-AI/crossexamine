@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from menxia import council, gate, slicer
+from crossexamine import council, gate, slicer
 
 
 def test_no_write_tools_in_read_only_surface():
