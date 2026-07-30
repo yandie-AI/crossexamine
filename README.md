@@ -73,8 +73,11 @@ line number to prove it.
 ## Install
 
 ```bash
-pip install menxia
+git clone https://github.com/yandie-AI/menxia && cd menxia && pip install -e .
 ```
+
+> Not on PyPI yet — `pip install menxia` will work once the first tag is cut.
+> Zero dependencies, so installing from source is a clone and a `pip install -e .`.
 
 ## Setup (about a minute)
 
